@@ -29,6 +29,21 @@ os.environ.setdefault(
 sys.path.append(config.get("django", "location"))
 application = get_wsgi_application()
 
+from modules import extraction, review, upload
+
 log.debug("STUDY BUFFALO DICTIONARY TOOL STARTED")
+
+# Retrieve a list of all the words to review
+
+# Access the dictionary application to retrieve all the data on things to monitor
+
+# Access each monitored application and download all the data from the fields
+
+# Take all the extracted data and convert it to a list of single words
+
+# Remove any duplicate words
+
+# For each word, check if it exists in the dictionary or excluded lists
+# If not, upload the word to the pending dictionary
 
 log.debug("STUDY BUFFALO DICTIONARY TOOL COMPLETED")
