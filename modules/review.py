@@ -29,15 +29,31 @@ def extract_new_words(full_word_list):
             for word in words:
                 unique = True
 
-                # Check the Word model
+                # Check the Word model (regular word)
                 if Word.objects.filter(
                     language=lang, dictionary_type=dict_type, word=word
+                ).exists():
+                    unique = False
+
+                # Check the Word model (first letter lowercase)
+                if Word.objects.filter(
+                    language=lang, 
+                    dictionary_type=dict_type, 
+                    word="{}{}".format(word[:1].lower(), word[1:])
                 ).exists():
                     unique = False
 
                 # Check the WordPending model
                 if WordPending.objects.filter(
                     language=lang, dictionary_type=dict_type, word=word
+                ).exists():
+                    unique = False
+                    
+                # Check the WordPending model (first letter lowercase)
+                if WordPending.objects.filter(
+                    language=lang, 
+                    dictionary_type=dict_type, 
+                    word="{}{}".format(word[:1].lower(), word[1:])
                 ).exists():
                     unique = False
 
@@ -49,5 +65,13 @@ def extract_new_words(full_word_list):
 
                 if unique:
                     new_word_list[lang][dict_type].add(word)
+                    
+                # Check the ExcludedWord model (first letter lowercase)
+                if ExcludedWord.objects.filter(
+                    language=lang, 
+                    dictionary_type=dict_type, 
+                    word="{}{}".format(word[:1].lower(), word[1:])
+                ).exists():
+                    unique = False
 
     return new_word_list
