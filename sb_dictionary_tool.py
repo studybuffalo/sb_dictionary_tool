@@ -34,16 +34,12 @@ from modules import extraction, review, upload
 log.debug("STUDY BUFFALO DICTIONARY TOOL STARTED")
 
 # Retrieve a list of all the words to review
-
-# Access the dictionary application to retrieve all the data on things to monitor
-
-# Access each monitored application and download all the data from the fields
-
-# Take all the extracted data and convert it to a list of single words
-
-# Remove any duplicate words
+words = extraction.retrieve_words()
 
 # For each word, check if it exists in the dictionary or excluded lists
-# If not, upload the word to the pending dictionary
+reviewed_words = review.extract_new_words(words)
+
+# Upload the new words to the WordPending model
+upload.upload_words(reviewed_words)
 
 log.debug("STUDY BUFFALO DICTIONARY TOOL COMPLETED")
