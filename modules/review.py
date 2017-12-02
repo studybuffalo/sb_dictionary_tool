@@ -15,7 +15,7 @@ def extract_new_words(full_word_list):
     new_word_list = {}
 
     for lang, dictionary_types in full_word_list.items():
-        log.debug("Cycling through {} words".format(lang))
+        log.debug("Collecting unique {} words".format(lang))
 
         # Setup the new word list with the language
         try:
@@ -27,7 +27,7 @@ def extract_new_words(full_word_list):
         lang_model = Language.objects.get(language=lang)
 
         for dict_type, dictionary_classes in dictionary_types.items():
-            log.debug("Cycling through {} dictionary type".format(dict_type))
+            log.debug("Collecting unique {} words".format(dict_type))
 
             # Setup the new word list with the dictionary type 
             try:
@@ -41,7 +41,7 @@ def extract_new_words(full_word_list):
             )
 
             for dict_class, words in dictionary_classes.items():
-                log.debug("Cycling through {} class".format(dict_class))
+                log.debug("Collecting unique {} words".format(dict_class))
 
                 # Setup the new word list with the dictonary class
                 try:
