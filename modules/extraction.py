@@ -109,7 +109,7 @@ def retrieve_hc_dpd_words():
     trade_names = SubBrand.objects.all().values_list("substitution", flat=True)
     
     for trade_name in trade_names:
-        log.debug("Extracting and process words from '{}'".format(trade_name))
+        log.debug("Extracting/processing words from '{}'".format(trade_name))
 
         # Get references to any entry this substitution applies to
         drug_products = DrugProduct.objects.filter(
@@ -142,7 +142,7 @@ def retrieve_hc_dpd_words():
     )
 
     for ingredient in ingredients:
-        log.debug("Extracting and process words from '{}'".format(ingredient))
+        log.debug("Extracting/processing words from '{}'".format(ingredient))
 
         # Get references to any entry this substitution applies to
         active_ingredients = ActiveIngredient.objects.filter(
@@ -197,7 +197,7 @@ def retrieve_hc_dpd_words():
     )
 
     for name in company_names:
-        log.debug("Extracting and process words from '{}'".format(name))
+        log.debug("Extracting/processing words from '{}'".format(name))
 
         # Get references to any entry this substitution applies to
         companies = Company.objects.filter(
