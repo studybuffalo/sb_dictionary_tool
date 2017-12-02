@@ -14,7 +14,7 @@ def retrieve_hc_dpd_words():
     # Setup the words dictionary to hold all the retrieved words
     words = {
         "English": {
-            "Pharmaceutical company names": {
+            "company_names": {
                 "disinfectant": {
                     "word_set": set(),
                     "word_list": []
@@ -28,7 +28,7 @@ def retrieve_hc_dpd_words():
                     "word_list": []
                 },
             },
-            "Trade names": {
+            "trade_names": {
                 "disinfectant": {
                     "word_set": set(),
                     "word_list": []
@@ -42,7 +42,7 @@ def retrieve_hc_dpd_words():
                     "word_list": []
                 },
             },
-            "Ingredients": {
+            "ingredients": {
                 "disinfectant": {
                     "word_set": set(),
                     "word_list": []
@@ -58,7 +58,7 @@ def retrieve_hc_dpd_words():
             }
         },
         "French": {
-            "Pharmaceutical company names": {
+            "company_names": {
                 "disinfectant": {
                     "word_set": set(),
                     "word_list": []
@@ -72,7 +72,7 @@ def retrieve_hc_dpd_words():
                     "word_list": []
                 },
             },
-            "Trade names": {
+            "trade_names": {
                 "disinfectant": {
                     "word_set": set(),
                     "word_list": []
@@ -86,7 +86,7 @@ def retrieve_hc_dpd_words():
                     "word_list": []
                 },
             },
-            "Ingredients": {
+            "ingredients": {
                 "disinfectant": {
                     "word_set": set(),
                     "word_list": []
