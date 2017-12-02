@@ -1,55 +1,240 @@
-from django.apps import apps
 import logging
 import re
-
-from dictionary.models import MonitoredApplication
-
 
 # Setup logging
 log = logging.getLogger(__name__)
 
+def retrieve_hc_dpd_words():
+    """Extracts all words from the hc_dpd application"""
+    from hc_dpd.models import (
+        ActiveIngredients, Companies, DrugProduct, SubBrand, SubCompanyName, 
+        SubIngredient
+    )
 
-def retrieve_words():
-    """Extracts all words from fields listed in Dictionary App"""
-    # COLLECT ALL THE DATABASE VALUES
-    words = {}
+    # Setup the words dictionary to hold all the retrieved words
+    words = {
+        "English": {
+            "Pharmaceutical company names": {
+                "disinfectant": {
+                    "word_set": set(),
+                    "word_list": []
+                },
+                "human": {
+                    "word_set": set(),
+                    "word_list": []
+                },
+                "veterinary": {
+                    "word_set": set(),
+                    "word_list": []
+                },
+            },
+            "Trade names": {
+                "disinfectant": {
+                    "word_set": set(),
+                    "word_list": []
+                },
+                "human": {
+                    "word_set": set(),
+                    "word_list": []
+                },
+                "veterinary": {
+                    "word_set": set(),
+                    "word_list": []
+                },
+            },
+            "Ingredients": {
+                "disinfectant": {
+                    "word_set": set(),
+                    "word_list": []
+                },
+                "human": {
+                    "word_set": set(),
+                    "word_list": []
+                },
+                "veterinary": {
+                    "word_set": set(),
+                    "word_list": []
+                },
+            }
+        },
+        "French": {
+            "Pharmaceutical company names": {
+                "disinfectant": {
+                    "word_set": set(),
+                    "word_list": []
+                },
+                "human": {
+                    "word_set": set(),
+                    "word_list": []
+                },
+                "veterinary": {
+                    "word_set": set(),
+                    "word_list": []
+                },
+            },
+            "Trade names": {
+                "disinfectant": {
+                    "word_set": set(),
+                    "word_list": []
+                },
+                "human": {
+                    "word_set": set(),
+                    "word_list": []
+                },
+                "veterinary": {
+                    "word_set": set(),
+                    "word_list": []
+                },
+            },
+            "Ingredients": {
+                "disinfectant": {
+                    "word_set": set(),
+                    "word_list": []
+                },
+                "human": {
+                    "word_set": set(),
+                    "word_list": []
+                },
+                "veterinary": {
+                    "word_set": set(),
+                    "word_list": []
+                },
+            }
+        }
+    }
 
-    # Get all the MonitoredApplications
-    applications = MonitoredApplication.objects.all()
+    # Extract the trade name words
+    trade_names = SubBrand.objects.all().values_list("substitution", flat=True)
+    
+    for trade_name in trade_names:
+        # Get references to any entry this substitution applies to
+        drug_products = DrugProduct.objects.filter(
+            brand_name=trade_name
+        )
 
-    for app in applications:
-        # Get all the referenced models
-        models = app.monitoredmodel_set.all()
+        for product in drug_products:
+            class_name = product.class_e.lower()
+            word_dict = words["English"]["Trade names"][class_name]
+            
+            word_list = re.findall(r"[\w']+", trade_name)
+            
+            for word in word_list:
+                # Check if this word is already in the set
+                if word not in word_dict["word_set"]:
+                    # Add word to set
+                    word_dict["word_set"].add(word)
 
-        for model in models:
-            # Get all the referenced fields
-            fields = model.monitoredfield_set.all()
-
-            # Get a model reference
-            model_reference = apps.get_model(
-                app.application_name, model.model_name
-            )
-
-            # Get the values for the monitored fields
-            for field in fields:
-                field_values = model_reference.objects.values(field.field_name)
-                dictionary_type = field.dictionary_type.id
-                language = field.language.id
-
-                # Add the dictionary and language as indices to array
-                try:
-                    words[language]
-                except (KeyError, IndexError):
-                    words[language] = {}
-
-                try:
-                    words[language][dictionary_type]
-                except (KeyError, IndexError):
-                    words[language][dictionary_type] = set()
-
-                for value in field_values:
-                    word_list = re.findall(r"[\w']+", value[field.field_name])
-
-                    words[language][dictionary_type].update(word_list)
+                    # Add diciontary to word_list
+                    word_dict["word_list"].append({
+                        "original_string": trade_name,
+                        "word": word,
+                    })
                 
+    # Extract the ingredient words
+    ingredients = SubIngredient.objects.all().values_list(
+        "substitution", flat=True
+    )
+
+    for ingredient in ingredients:
+        # Get references to any entry this substitution applies to
+        active_ingredients = ActiveIngredients.objects.filter(
+            ingredient=ingredient
+        )
+
+        for active_ingredient in active_ingredients:
+            # Get the proper class name for this active_ingredient
+            try:
+                class_name = DrugProduct.objects.get(
+                    drug_code=active_ingredient.drug_code
+                ).class_e.lower()
+            except MultipleObjectsReturned:
+                log.warn(
+                    "Multiple DrugProducts with same drug code",
+                    exc_info=True
+                )
+                class_name = DrugProduct.objects.filter(
+                    drug_code=active_ingredient.drug_code
+                )[0].class_e.lower()
+            except DoesNotExist:
+                class_name = ""
+
+            # Setup reference to word_dictioanry & create word_list
+            try:
+                word_dict = words["English"]["Ingredients"][class_name]
+                word_list = re.findall(r"[\w']+", ingredient)
+            except IndexError:
+                log.warn(
+                    "Invalid class name provided: {}".format(class_name),
+                    exc_info=True
+                )
+            
+            # Add each unique word to the dictionary
+            for word in word_list:
+                # Check if this word is already in the set
+                if word not in word_dict["word_set"]:
+                    # Add word to set
+                    word_dict["word_set"].add(word)
+
+                    # Add diciontary to word_list
+                    word_dict["word_list"].append({
+                        "original_string": ingredient,
+                        "word": word,
+                    })
+                
+    # Extract the company words
+    company_names = SubCompanyName.objects.all().values_list(
+        "substitution", flat=True
+    )
+
+    for name in company_names:
+        # Get references to any entry this substitution applies to
+        companies = Companies.objects.filter(
+            company_name=name
+        )
+
+        for company in companies:
+            # Get the proper class name for this active_ingredient
+            try:
+                class_name = DrugProduct.objects.get(
+                    drug_code=company.drug_code
+                ).class_e.lower()
+            except MultipleObjectsReturned:
+                log.warn(
+                    "Multiple DrugProducts with same drug code",
+                    exc_info=True
+                )
+                class_name = DrugProduct.objects.filter(
+                    drug_code=company.drug_code
+                )[0].class_e.lower()
+            except DoesNotExist:
+                class_name = ""
+
+            # Setup reference to word_dictioanry & create word_list
+            try:
+                word_dict = words["English"]["Pharmaceutical company names"][class_name]
+                word_list = re.findall(r"[\w']+", name)
+            except IndexError:
+                log.warn(
+                    "Invalid class name provided: {}".format(class_name),
+                    exc_info=True
+                )
+            
+            # Add each unique word to the dictionary
+            for word in word_list:
+                # Check if this word is already in the set
+                if word not in word_dict["word_set"]:
+                    # Add word to set
+                    word_dict["word_set"].add(word)
+
+                    # Add diciontary to word_list
+                    word_dict["word_list"].append({
+                        "original_string": name,
+                        "word": word,
+                    })
+
     return words
+
+def retrieve_words(application):
+    """Uses the provided application to return a word list"""
+    if application.upper() == "HC_DPD":
+        return retrieve_hc_dpd_words()

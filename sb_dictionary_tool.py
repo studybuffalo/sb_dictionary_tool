@@ -8,7 +8,7 @@ from unipath import Path
 
 # APPLICATION SETUP
 # Setup root path
-root = Path(sys.argv[1])
+root = Path(sys.argv[2])
 
 # Collect the config file
 config = configparser.ConfigParser()
@@ -33,8 +33,11 @@ from modules import extraction, review, upload
 
 log.debug("STUDY BUFFALO DICTIONARY TOOL STARTED")
 
+# Retrieve which application to extract for
+application = sys.argv[1]
+
 # Retrieve a list of all the words to review
-words = extraction.retrieve_words()
+words = extraction.retrieve_words(application)
 
 # For each word, check if it exists in the dictionary or excluded lists
 reviewed_words = review.extract_new_words(words)

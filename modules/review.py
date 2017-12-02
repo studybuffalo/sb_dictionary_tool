@@ -1,6 +1,9 @@
 import logging
 
-from dictionary.models import Word, WordPending, ExcludedWord
+from dictionary.models import (
+    Language, DictionaryType, DictionaryClass,
+    Word, WordPending, ExcludedWord
+)
 
 
 # Setup logging
@@ -18,60 +21,94 @@ def extract_new_words(full_word_list):
         except (KeyError, IndexError):
             new_word_list[lang] = {}
 
-        for dict_type, words in dictionary_types.items():
+        # Get the language model entry from Django
+        lang_model = Language.objects.get(language=lang)
+
+        for dict_type, dictionary_classes in dictionary_types.items():
             # Setup the new word list with the dictionary type 
             try:
                 new_word_list[lang][dict_type]
             except (KeyError, IndexError):
-                new_word_list[lang][dict_type] = set()
+                new_word_list[lang][dict_type] = {}
 
-            # Cycle through each word
-            for word in words:
-                unique = True
+            # Get the DictionaryType model entry
+            dict_type_model = DictionaryType.objects.get(
+                dictionary_name=dict_type
+            )
 
-                # Check the Word model (regular word)
-                if Word.objects.filter(
-                    language=lang, dictionary_type=dict_type, word=word
-                ).exists():
-                    unique = False
-
-                # Check the Word model (first letter lowercase)
-                if Word.objects.filter(
-                    language=lang, 
-                    dictionary_type=dict_type, 
-                    word="{}{}".format(word[:1].lower(), word[1:])
-                ).exists():
-                    unique = False
-
-                # Check the WordPending model
-                if WordPending.objects.filter(
-                    language=lang, dictionary_type=dict_type, word=word
-                ).exists():
-                    unique = False
+            for dict_class, words in dictionary_classes.items():
+                # Setup the new word list with the dictonary class
+                try:
+                    new_word_list[lang][dict_type][dict_class]
+                except (KeyError, IndexError):
+                    new_word_list[lang][dict_type][dict_class] = []
                     
-                # Check the WordPending model (first letter lowercase)
-                if WordPending.objects.filter(
-                    language=lang, 
-                    dictionary_type=dict_type, 
-                    word="{}{}".format(word[:1].lower(), word[1:])
-                ).exists():
-                    unique = False
+                # Get the DictionaryClass model entry
+                dict_class_model = DictionaryClass.objects.get(
+                    class_name=dict_class
+                )
 
-                # Check the ExcludedWord model
-                if ExcludedWord.objects.filter(
-                    language=lang, dictionary_type=dict_type, word=word
-                ).exists():
-                    unique = False
+                # Cycle through each word
+                for word_dict in words["word_list"]:
+                    unique = True
 
-                if unique:
-                    new_word_list[lang][dict_type].add(word)
+                    word = word_dict["word"]
+
+                    # Check the Word model (regular word)
+                    if Word.objects.filter(
+                        language=lang_model,
+                        dictionary_type=dict_type_model, 
+                        dictionary_class=dict_class_model, 
+                        word=word
+                    ).exists():
+                        unique = False
+
+                    # Check the Word model (first letter lowercase)
+                    if Word.objects.filter(
+                        language=lang_model,
+                        dictionary_type=dict_type_model, 
+                        dictionary_class=dict_class_model, 
+                        word="{}{}".format(word[:1].lower(), word[1:])
+                    ).exists():
+                        unique = False
+
+                    # Check the WordPending model
+                    if WordPending.objects.filter(
+                        language=lang_model,
+                        dictionary_type=dict_type_model, 
+                        dictionary_class=dict_class_model, 
+                        word=word
+                    ).exists():
+                        unique = False
                     
-                # Check the ExcludedWord model (first letter lowercase)
-                if ExcludedWord.objects.filter(
-                    language=lang, 
-                    dictionary_type=dict_type, 
-                    word="{}{}".format(word[:1].lower(), word[1:])
-                ).exists():
-                    unique = False
+                    # Check the WordPending model (first letter lowercase)
+                    if WordPending.objects.filter(
+                        language=lang_model,
+                        dictionary_type=dict_type_model, 
+                        dictionary_class=dict_class_model, 
+                        word="{}{}".format(word[:1].lower(), word[1:])
+                    ).exists():
+                        unique = False
 
+                    # Check the ExcludedWord model
+                    if ExcludedWord.objects.filter(
+                        language=lang_model,
+                        dictionary_type=dict_type_model, 
+                        dictionary_class=dict_class_model, 
+                        word=word
+                    ).exists():
+                        unique = False
+                        
+                    # Check the ExcludedWord model (first letter lowercase)
+                    if ExcludedWord.objects.filter(
+                        language=lang_model,
+                        dictionary_type=dict_type_model, 
+                        dictionary_class=dict_class_model, 
+                        word="{}{}".format(word[:1].lower(), word[1:])
+                    ).exists():
+                        unique = False
+
+                    if unique:
+                        new_word_list[lang][dict_type][dict_class].append(word_dict)
+                    
     return new_word_list
