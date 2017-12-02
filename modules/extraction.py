@@ -109,7 +109,7 @@ def retrieve_hc_dpd_words():
     trade_names = SubBrand.objects.all().values_list("substitution", flat=True)
     
     for trade_name in trade_names:
-        log.debug("Extracting and process words from '{}'".fromat(trade_name))
+        log.debug("Extracting and process words from '{}'".format(trade_name))
 
         # Get references to any entry this substitution applies to
         drug_products = DrugProduct.objects.filter(
@@ -118,7 +118,7 @@ def retrieve_hc_dpd_words():
 
         for product in drug_products:
             class_name = product.class_e.lower()
-            word_dict = words["English"]["Trade names"][class_name]
+            word_dict = words["English"]["trade_names"][class_name]
             
             word_list = re.findall(r"[\w']+", trade_name)
             
@@ -142,7 +142,7 @@ def retrieve_hc_dpd_words():
     )
 
     for ingredient in ingredients:
-        log.debug("Extracting and process words from '{}'".fromat(ingredient))
+        log.debug("Extracting and process words from '{}'".format(ingredient))
 
         # Get references to any entry this substitution applies to
         active_ingredients = ActiveIngredient.objects.filter(
@@ -168,7 +168,7 @@ def retrieve_hc_dpd_words():
 
             # Setup reference to word_dictioanry & create word_list
             try:
-                word_dict = words["English"]["Ingredients"][class_name]
+                word_dict = words["English"]["ingredients"][class_name]
                 word_list = re.findall(r"[\w']+", ingredient)
             except IndexError:
                 log.warn(
@@ -197,7 +197,7 @@ def retrieve_hc_dpd_words():
     )
 
     for name in company_names:
-        log.debug("Extracting and process words from '{}'".fromat(name))
+        log.debug("Extracting and process words from '{}'".format(name))
 
         # Get references to any entry this substitution applies to
         companies = Company.objects.filter(
@@ -223,7 +223,7 @@ def retrieve_hc_dpd_words():
 
             # Setup reference to word_dictioanry & create word_list
             try:
-                word_dict = words["English"]["Pharmaceutical company names"][class_name]
+                word_dict = words["English"]["company_names"][class_name]
                 word_list = re.findall(r"[\w']+", name)
             except IndexError:
                 log.warn(
