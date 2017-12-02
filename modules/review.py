@@ -53,7 +53,7 @@ def extract_new_words(full_word_list):
                 dict_class_model = DictionaryClass.objects.get(
                     class_name=dict_class
                 )
-                print(dict_class)
+                print(word_dict)
                 # Cycle through each word
                 for word_dict in words["word_list"]:
                     unique = True
