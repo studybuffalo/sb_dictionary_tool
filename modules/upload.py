@@ -11,19 +11,27 @@ log = logging.getLogger(__name__)
 
 def upload_words(word_list):
     for lang, dictionary_types in word_list.items():
+        log.debug("Uploading {} words".format(lang))
+
         language_model = Language.objects.get(language=lang)
 
         for dict_type, dictionary_classes in dictionary_types.items():
+            log.debug("Uploading {} words".format(dict_type))
+
             dict_type_model = DictionaryType.objects.get(
                 dictionary_name=dict_type
             )
 
             for dict_class, words in dictionary_classes.items():
+                log.debug("Uploading {} words". format(dict_class))
+
                 dict_class_model = DictionaryClass.objects.get(
                     class_name=dict_class
                 )
 
                 for dict_word in words:
+                    log.debug("Uploading {}".format(dict_word["word"]))
+
                     word_model = WordPending(
                         language=language_model,
                         dictionary_type=dict_type_model,
