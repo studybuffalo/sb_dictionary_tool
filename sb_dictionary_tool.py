@@ -31,7 +31,7 @@ application = get_wsgi_application()
 
 from modules import extraction, review, upload
 
-log.debug("STUDY BUFFALO DICTIONARY TOOL STARTED")
+log.info("STUDY BUFFALO DICTIONARY TOOL STARTED")
 
 # Retrieve which application to extract for
 application = sys.argv[1]
@@ -45,4 +45,4 @@ reviewed_words = review.extract_new_words(words)
 # Upload the new words to the WordPending model
 upload.upload_words(reviewed_words)
 
-log.debug("STUDY BUFFALO DICTIONARY TOOL COMPLETED")
+log.info("STUDY BUFFALO DICTIONARY TOOL COMPLETED")

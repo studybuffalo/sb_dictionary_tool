@@ -104,6 +104,8 @@ def retrieve_hc_dpd_words():
     }
 
     # Extract the trade name words
+    log.debug("Retrieving trade names")
+
     trade_names = SubBrand.objects.all().values_list("substitution", flat=True)
     
     for trade_name in trade_names:
@@ -131,6 +133,8 @@ def retrieve_hc_dpd_words():
                     })
                 
     # Extract the ingredient words
+    log.debug("Retrieving ingredients")
+
     ingredients = SubIngredient.objects.all().values_list(
         "substitution", flat=True
     )
@@ -182,6 +186,8 @@ def retrieve_hc_dpd_words():
                     })
                 
     # Extract the company words
+    log.debug("Retrieving company names")
+
     company_names = SubCompanyName.objects.all().values_list(
         "substitution", flat=True
     )
@@ -237,4 +243,5 @@ def retrieve_hc_dpd_words():
 def retrieve_words(application):
     """Uses the provided application to return a word list"""
     if application.upper() == "HC_DPD":
+        log.info("Retrieving HC DPD application words")
         return retrieve_hc_dpd_words()
