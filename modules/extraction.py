@@ -7,7 +7,7 @@ log = logging.getLogger(__name__)
 def retrieve_hc_dpd_words():
     """Extracts all words from the hc_dpd application"""
     from hc_dpd.models import (
-        ActiveIngredients, Companies, DrugProduct, SubBrand, SubCompanyName, 
+        ActiveIngredient, Company, DrugProduct, SubBrand, SubCompanyName, 
         SubIngredient
     )
 
@@ -137,7 +137,7 @@ def retrieve_hc_dpd_words():
 
     for ingredient in ingredients:
         # Get references to any entry this substitution applies to
-        active_ingredients = ActiveIngredients.objects.filter(
+        active_ingredients = ActiveIngredient.objects.filter(
             ingredient=ingredient
         )
 
@@ -188,7 +188,7 @@ def retrieve_hc_dpd_words():
 
     for name in company_names:
         # Get references to any entry this substitution applies to
-        companies = Companies.objects.filter(
+        companies = Company.objects.filter(
             company_name=name
         )
 
