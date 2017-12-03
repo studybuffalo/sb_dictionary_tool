@@ -115,6 +115,11 @@ def retrieve_hc_dpd_words():
         drug_products = DrugProduct.objects.filter(
             brand_name=trade_name
         )
+        
+        if trade_name == "Anodan-HC Ointment":
+            log.warn("Anodan Found")
+            log.warn(len(drug_products))
+            log.warn(drug_products)
 
         for product in drug_products:
             class_name = product.class_e.lower()

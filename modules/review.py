@@ -53,13 +53,13 @@ def extract_new_words(full_word_list):
                 dict_class_model = DictionaryClass.objects.get(
                     class_name=dict_class
                 )
-                print(words)
+
                 # Cycle through each word
                 for word_dict in words["word_list"]:
                     unique = True
 
                     word = word_dict["word"]
-
+                    word_lower_case = "{}{}".format(word[:1].lower(), word[1:])
                     log.debug("Checking if {} is unique".format(word))
 
                     # Check the Word model (regular word)
@@ -76,7 +76,7 @@ def extract_new_words(full_word_list):
                         language=lang_model,
                         dictionary_type=dict_type_model, 
                         dictionary_class=dict_class_model, 
-                        word="{}{}".format(word[:1].lower(), word[1:])
+                        word=word_lower_case
                     ).exists():
                         unique = False
 
@@ -94,7 +94,7 @@ def extract_new_words(full_word_list):
                         language=lang_model,
                         dictionary_type=dict_type_model, 
                         dictionary_class=dict_class_model, 
-                        word="{}{}".format(word[:1].lower(), word[1:])
+                        word=word_lower_case
                     ).exists():
                         unique = False
 
@@ -112,7 +112,7 @@ def extract_new_words(full_word_list):
                         language=lang_model,
                         dictionary_type=dict_type_model, 
                         dictionary_class=dict_class_model, 
-                        word="{}{}".format(word[:1].lower(), word[1:])
+                        word=word_lower_case
                     ).exists():
                         unique = False
 
