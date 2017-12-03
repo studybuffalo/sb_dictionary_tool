@@ -115,7 +115,7 @@ def retrieve_hc_dpd_words():
         drug_products = DrugProduct.objects.filter(
             brand_name=trade_name
         )
-        log.debug(drug_products)
+
         for product in drug_products:
             class_name = product.class_e.lower()
             word_dict = words["English"]["trade_names"][class_name]
